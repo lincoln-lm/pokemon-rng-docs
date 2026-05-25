@@ -189,8 +189,8 @@ An easy to calculate and effective decomposition of $n$ is given by the binary r
 
 ```cpp
 // precomputed mults and adds
-constexpr uint32_t MULTIPLIERS[32] = ...; // M[i] = a^{i}
-constexpr uint32_t INCREMENTS[32] = ...; // I[i] = c_{i}
+constexpr uint32_t MULTIPLIERS[32] = ...; // M[i] = a^{2^i}
+constexpr uint32_t INCREMENTS[32] = ...; // I[i] = c_{2^i}
 
 // 32-bit LCG
 void jump(uint32_t &state, uint32_t n) {
