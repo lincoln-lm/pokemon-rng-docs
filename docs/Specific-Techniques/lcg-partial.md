@@ -75,7 +75,7 @@ $$
 \end{align}
 $$
 
-Multiplying both sides by $q = \text{0x67D3}$ allows the earlier property (``0x67D3*0x41C64E6D = 0x1aad00007ED7``) to be applied for the substitution $qa = 2^{32}p + r$
+Multiplying both sides by $q = \text{0x67D3}$ allows the earlier property (``0x67D3*0x41C64E6D = 0x1AAD00007ED7``) to be applied for the substitution $qa = 2^{32}p + r$
 
 $$
 \begin{align}
