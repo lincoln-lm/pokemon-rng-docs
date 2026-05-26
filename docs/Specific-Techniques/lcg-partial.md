@@ -12,7 +12,7 @@ $$
 O_{n+1} \cdot 2^{16} + L_{n+1} \equiv a(O_n \cdot 2^{16} + L_n) + c \pmod m
 $$
 
-for some $L_n$.
+for some $L_{n+1}$.
 
 For simplicity, call the ordered sequence of solutions $S_i$, where each $S_i$ is a valid value for $L_n$ that satisfies the congruence.
 
