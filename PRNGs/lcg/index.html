@@ -1,0 +1,1190 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://lincoln-lmc.github.io/pokemon-rng-docs/PRNGs/lcg/">
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../../Specific-Techniques/lcg-partial/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Linear Congruential Generator (LCG) - Pok&eacute;mon RNG Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#linear-congruential-generator-lcg" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pok&amp;eacute;mon RNG Docs" class="md-header__button md-logo" aria-label="Pok&eacute;mon RNG Docs" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pok&eacute;mon RNG Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linear Congruential Generator (LCG)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pok&amp;eacute;mon RNG Docs" class="md-nav__button md-logo" aria-label="Pok&eacute;mon RNG Docs" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    Pok&eacute;mon RNG Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PRNGs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    PRNGs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear Congruential Generator (LCG)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear Congruential Generator (LCG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#state-transition-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Transition Function
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modulo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reciprocal-division" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reciprocal Division
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiply-shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiply-Shift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random Float
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stepping-backwards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stepping Backwards
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jumping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jumping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distance-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distance Function
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specific Techniques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specific Techniques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Specific-Techniques/lcg-partial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LCG State Recovery From Two Consecutive Partial Outputs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#state-transition-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Transition Function
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modulo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reciprocal-division" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reciprocal Division
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiply-shift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiply-Shift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random Float
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stepping-backwards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stepping Backwards
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jumping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jumping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distance-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distance Function
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="linear-congruential-generator-lcg">Linear Congruential Generator (LCG)</h1>
+<div class="admonition note">
+<p class="admonition-title">See Also</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Linear_congruential_generator">Wikipedia Article</a></li>
+</ul>
+</div>
+<p>A linear congruential generator (LCG, sometimes linear congruential random number generator, LCRNG) is a pseudo-random number generator defined by the recurrence relation:</p>
+<div class="arithmatex">\[
+X_{n+1} = (aX_n + c) \bmod m
+\]</div>
+<p>for a modulus <span class="arithmatex">\(m\)</span>, multiplier <span class="arithmatex">\(a\)</span>, increment <span class="arithmatex">\(c\)</span>, and internal state <span class="arithmatex">\(X_n\)</span>.</p>
+<h2 id="state-transition-function">State Transition Function</h2>
+<p>The state transition function can be implemented as:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 32-bit LCG</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">next_state</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">MULTIPLIER</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">INCREMENT</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">MODULUS</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// 64-bit LCG</span>
+<span class="kt">uint64_t</span><span class="w"> </span><span class="nf">next_state</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">MULTIPLIER</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">INCREMENT</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">MODULUS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>or, in the case where the modulus <span class="arithmatex">\(m = 2^{32}, 2^{64}\)</span> the modulo operation becomes redundant due to wrapping addition:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 32-bit LCG</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">next_state</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">MULTIPLIER</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">INCREMENT</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// 64-bit LCG</span>
+<span class="kt">uint64_t</span><span class="w"> </span><span class="nf">next_state</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">MULTIPLIER</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">INCREMENT</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="output-functions">Output Functions</h2>
+<p>Generally, the output function first truncates the state to just the higher-order bits (most commonly the top half of the state). This is because the higher bits have a longer period (see: <a href="#distance-function">Distance Function</a>). Some exceptions are found in DPPt/HGSS/BDSP's Group Seed systems.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 32-bit LCG</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="nf">next_uint</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">next_state</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// 64-bit LCG</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">next_uint</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">next_state</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="modulo">Modulo</h3>
+<p>The modulo output function simply reduces <code>next_uint</code> <span class="arithmatex">\(\bmod n\)</span> where <span class="arithmatex">\(n\)</span> is the range of the output. This is used throughout RSE, FRLG, Colosseum, XD, HGSS, and most instances of LCGs in the series.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 32-bit LCG</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="nf">next_rand</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">next_uint</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="nf">next_rand</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">max</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">next_rand</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This distribution is slightly uneven as it results in outputs <span class="arithmatex">\(\in [0, \text{UINT_MAX} \bmod n]\)</span> being weighted slightly higher than the rest of the potential outputs. For example, a 32-bit LCG with <span class="arithmatex">\(n = 100\)</span> (assuming uniform randomness), results in outputs <span class="arithmatex">\(\in [0, 35]\)</span> having a weight of 656 and outputs <span class="arithmatex">\(\in [36, 99]\)</span> having weight 655.</p>
+<h3 id="reciprocal-division">Reciprocal Division</h3>
+<p>The reciprocal division output function takes the floor division of <code>next_uint</code> by a value <span class="arithmatex">\(p = \lfloor \text{UINT_MAX} \div n \rfloor + 1\)</span> where <span class="arithmatex">\(n\)</span> is the range of the output. This has the effect of partitioning the range of <code>next_uint</code> into <span class="arithmatex">\(n - 1\)</span> contiguous buckets of size <span class="arithmatex">\(p\)</span> and a final bucket of size <span class="arithmatex">\(\text{UINT_MAX} \bmod p\)</span>. This is primarily seen in DPPt's main RNG.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 32-bit LCG</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="nf">next_rand</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">next_uint</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">((</span><span class="mh">0xFFFF</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="nf">next_rand</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">max</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">next_rand</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This distribution is slightly uneven as the last bucket (and thus the weight of output <span class="arithmatex">\(n-1\)</span>) is smaller than the rest. For example, a 32-bit LCG with <span class="arithmatex">\(n = 100\)</span> (assuming uniform randomness), results in outputs <span class="arithmatex">\(\in [0, 98]\)</span> having a weight of 656 and output <span class="arithmatex">\(99\)</span> having weight 592. This issue could have been easily rectified by using <span class="arithmatex">\(p = \lfloor \text{UINT_MAX} \div n \rfloor\)</span> and rejection sampling out of range values (see: <a href="https://github.com/pmret/papermario/blob/8a0ea06aa996ecb1fd0545c272039d223b1a7ee9/src/43F0.c#L503-L524">Paper Mario</a>).</p>
+<h3 id="multiply-shift">Multiply-Shift</h3>
+<p>The multiply-shift output function multiplies <code>next_uint</code> by <span class="arithmatex">\(n\)</span> (the range of the output) and right shifts by the size in bits of <code>next_uint</code>. As right shifting is equivalent to floor division, this approximates multiplying by <span class="arithmatex">\(n \div (\text{UINT_MAX}+1)\)</span> or dividing by <span class="arithmatex">\((\text{UINT_MAX}+1) \div n\)</span>. This has the effect of partitioning the range of <code>next_uint</code> into <span class="arithmatex">\(n\)</span> contiguous buckets of roughly equal size <span class="arithmatex">\(p \approx (\text{UINT_MAX}+1) \div n\)</span>. This is used in BW/B2W2's 64-bit LCG.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 64-bit LCG</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">next_rand</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">((</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">next_uint</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">next_rand</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">max</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">next_rand</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This distribution is slightly uneven as it results in <span class="arithmatex">\(\text{UINT_MAX + 1} \bmod n\)</span> of the outputs being weighted slightly higher than the rest (these are evenly distributed throughout the range). For example, a 32-bit LCG with <span class="arithmatex">\(n = 100\)</span> (assuming uniform randomness), results in 36 outputs having a weight of 656 and the other 64 having weight 655. This is a similar distribution to <a href="#modulo">modulo</a>, but is less lopsided and does not require expensive division.</p>
+<h3 id="random-float">Random Float</h3>
+<p>To generate a uniform float <span class="arithmatex">\(\in [0,1)\)</span>, <code>next_uint</code> is simply divided by <code>UINT_MAX + 1</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 32-bit LCG</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">next_float</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">next_uint</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">65536.0f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">next_float</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">max</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">next_float</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="stepping-backwards">Stepping Backwards</h2>
+<p>Stepping backwards requires solving the recurrence relation for <span class="arithmatex">\(X_n\)</span> as follows:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+X_{n+1} &amp;= (aX_n + c) \bmod m \\
+X_{n+1} &amp;\equiv aX_n + c \pmod m \\
+X_{n+1} - c &amp;\equiv aX_n \pmod m \\
+X_n &amp;\equiv a^{-1}(X_{n+1} - c) \pmod m
+\end{aligned}
+\]</div>
+<p>This requires that the modular multiplicative inverse <span class="arithmatex">\(a^{-1}\)</span> exists (it does, as <span class="arithmatex">\(a\)</span> is chosen to be coprime to <span class="arithmatex">\(m\)</span>). Notably, this relation can itself be simplified into an LCG:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+X_n &amp;\equiv a^{-1}(X_{n+1} - c) \pmod m \\
+&amp;\equiv a^{-1}X_{n+1} - a^{-1}c \pmod m \\
+c^{-1} &amp;= - a^{-1}c \bmod m \\
+X_n &amp;\equiv a^{-1}X_{n+1} + c^{-1} \pmod m \\
+X_n &amp;= (a^{-1}X_{n+1} + c^{-1}) \bmod m
+\end{aligned}
+\]</div>
+<p><span class="arithmatex">\(a^{-1}\)</span> and therefore <span class="arithmatex">\(c^{-1}\)</span> can be found via the extended Euclidean algorithm as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">extended_euclid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span> 
+    <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+
+    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">extended_euclid</span><span class="p">(</span><span class="n">b</span> <span class="o">%</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">-</span> <span class="p">(</span><span class="n">b</span> <span class="o">//</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">x1</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x1</span>
+
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+
+<span class="n">reverse_mult</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">extended_euclid</span><span class="p">(</span><span class="n">mult</span><span class="p">,</span> <span class="n">mod</span><span class="p">)</span>
+<span class="n">reverse_add</span> <span class="o">=</span> <span class="p">(</span><span class="n">reverse_mult</span> <span class="o">*</span> <span class="o">-</span><span class="n">add</span><span class="p">)</span> <span class="o">%</span> <span class="n">mod</span>
+</code></pre></div>
+<h2 id="jumping">Jumping</h2>
+<p>Efficiently jumping an LCG requires finding some easy to calculate <span class="arithmatex">\(f(X_0, n) = X_n\)</span> for arbitrary <span class="arithmatex">\(n\)</span>. The naive implementation is to simply apply the state transition function <span class="arithmatex">\(n\)</span> times which is <span class="arithmatex">\(O(n)\)</span> time complexity. A much more efficient constant-time approach can be found as follows:</p>
+<p>First, notice that the recurrence relation is easily composable and reduced to another LCG:</p>
+<div class="arithmatex">\[
+\begin{align}
+X_{n+1} &amp;= (aX_n + c) \bmod m \\
+X_{n+2} &amp;= (aX_{n+1} + c) \bmod m \\
+&amp;= (a(aX_n + c) + c) \bmod m \\
+&amp;= (a^2X_n + ac + c) \bmod m \\
+c_2 &amp;= (ac + c) \bmod m \\
+&amp;= (a^2X_n + c_2) \bmod m \\
+&amp;\implies \\
+X_{n} &amp;= (a^nX_0 + c_n) \bmod m
+\end{align}
+\]</div>
+<p>so <span class="arithmatex">\(f(X_0, n)\)</span> is trivial to calculate if <span class="arithmatex">\(a^n\)</span> and <span class="arithmatex">\(c_n\)</span> are known.</p>
+<p>Then, note that <span class="arithmatex">\(f\)</span> is composable such that <span class="arithmatex">\(f(f(X_0, n_1), n_2) = f(X_0, n_1 + n_2)\)</span>. This means that if <span class="arithmatex">\(n\)</span> is decomposable into a sum <span class="arithmatex">\(\sum_{i=1}^{N} n_i\)</span> where each <span class="arithmatex">\(a^i\)</span> and <span class="arithmatex">\(c_i\)</span> are known, <span class="arithmatex">\(f(X_0, n)\)</span> is computable via <span class="arithmatex">\(N &lt; n\)</span> LCG state transitions with <span class="arithmatex">\(O(N)\)</span> time complexity.</p>
+<p>Given that the period of the LCG is <span class="arithmatex">\(m\)</span>, any <span class="arithmatex">\(n \geq m\)</span> can simply be reduced <span class="arithmatex">\(\bmod m\)</span> and only <span class="arithmatex">\(n \in [0, m)\)</span> must be considered.</p>
+<p>An easy to calculate and effective decomposition of <span class="arithmatex">\(n\)</span> is given by the binary representation of <span class="arithmatex">\(n = \sum_{i=1}2^{i-1}b_i\)</span>. In the case where <span class="arithmatex">\(m\)</span> is a power of 2, the number of terms and thus the <span class="arithmatex">\(N\)</span> that the time complexity is dependent on is the exponent of <span class="arithmatex">\(m\)</span> and is constant. This means a 32-bit LCG can be jumped by an arbitrary <span class="arithmatex">\(n\)</span> in only 32 state transitions (and a 64-bit LCG in 64) as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// precomputed mults and adds</span>
+<span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">MULTIPLIERS</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span><span class="w"> </span><span class="c1">// M[i] = a^{2^i}</span>
+<span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">INCREMENTS</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span><span class="w"> </span><span class="c1">// I[i] = c_{2^i}</span>
+
+<span class="c1">// 32-bit LCG</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">jump</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// instead of checking i &lt; 32, this could check n != 0</span>
+<span class="w">    </span><span class="c1">// to exit early when the most significant set bit is reached</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// extract the i-th bit</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MULTIPLIERS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">INCREMENTS</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Another method worth noting is jumping by representing the state transition function as multiplication by a particular matrix. The LCG recurrence relation is equivalent to the following:</p>
+<div class="arithmatex">\[
+\begin{align}
+\begin{bmatrix}
+X_{n+1} \\ 1
+\end{bmatrix} &amp;= \begin{bmatrix}
+a &amp; c \\
+0 &amp; 1 \\
+\end{bmatrix}\begin{bmatrix}
+X_n \\ 1
+\end{bmatrix} \bmod m \\
+&amp;\implies \\
+\begin{bmatrix}
+X_{n} \\ 1
+\end{bmatrix} &amp;= \begin{bmatrix}
+a &amp; c \\
+0 &amp; 1 \\
+\end{bmatrix}^n\begin{bmatrix}
+X_0 \\ 1
+\end{bmatrix} \bmod m
+\end{align}
+\]</div>
+<p>which allows efficient jumping if the matrix can be efficiently calculated via a method like exponentiation by squares.</p>
+<h2 id="distance-function">Distance Function</h2>
+<p>The problem of finding the distance between two LCG states can be thought of as the inverse of the problem of <a href="#jumping">jumping</a>. It requires some easy to calculate <span class="arithmatex">\(d(X_n, X_m) = m - n\)</span> when only <span class="arithmatex">\(X_n\)</span> and <span class="arithmatex">\(X_m\)</span> are known. Given the matrix representation of the state transition function above, it is clear that this is a particular case of the discrete logarithm problem. In the case of an LCG with a prime power modulus, <span class="arithmatex">\(d\)</span> can be calculated in constant-time as follows:</p>
+<p>First, starting with the trivial fact that <span class="arithmatex">\((N \bmod p^u) \bmod p^v = N \bmod p^v \quad \forall v &lt; u\)</span>, notice that reducing the state of the LCG by a smaller prime power produces a smaller LCG:</p>
+<div class="arithmatex">\[
+\begin{align}
+X_{n+1} &amp;= (aX_n + c) \bmod p^u \\
+X_{n+1} \bmod p^v &amp;= ((aX_n + c) \bmod p^u) \bmod p^v \\
+&amp;= (aX_n + c) \bmod p^v \\
+&amp;= ((a\bmod p^v)X_n + (c\bmod p^v)) \bmod p^v \\
+(X_v)_{n+1} &amp;= (a_v(X_v)_n + c_v) \bmod p^v
+\end{align}
+\]</div>
+<p>Given that <span class="arithmatex">\(a\)</span> and <span class="arithmatex">\(c\)</span> satisfy the properties for a full period LCG, <span class="arithmatex">\(a_v\)</span> and <span class="arithmatex">\(c_v\)</span> do as well (for the smaller modulus). This means that the sequence given by reducing the state of the LCG by <span class="arithmatex">\(p^v\)</span> has a period of <span class="arithmatex">\(p^v\)</span> which implies the distance function applied to this sequence <span class="arithmatex">\(d_v = d((X_v)_n, (X_v)_m) = d \bmod p^v\)</span>.</p>
+<p>Similar logic can be applied to other values of <span class="arithmatex">\(p\)</span>, but for the case of <span class="arithmatex">\(p = 2\)</span>, <span class="arithmatex">\(d\)</span> can be computed bit by bit as follows:</p>
+<p>Starting with the least significant bit, the sequence <span class="arithmatex">\(X_1\)</span> has period <span class="arithmatex">\(2^1 = 2\)</span> and the distance between <span class="arithmatex">\((X_1)_n\)</span> and <span class="arithmatex">\((X_1)_m\)</span> (<span class="arithmatex">\(d_1\)</span>) must be either 0 or 1. This is easy to compute as a distance of 0 implies equality and a distance of 1 implies inequality.</p>
+<p>Next, the sequence <span class="arithmatex">\(X_2\)</span> has period <span class="arithmatex">\(2^2 = 4\)</span> and the distance between <span class="arithmatex">\((X_2)_n\)</span> and <span class="arithmatex">\((X_2)_m\)</span> (<span class="arithmatex">\(d_2\)</span>) must be <span class="arithmatex">\(\in [0, 3]\)</span>. From the prior point, <span class="arithmatex">\(d_2 \bmod 2 = d_1 \implies d_2 = 2q + d_1\)</span> where <span class="arithmatex">\(q\)</span> is either 0 or 1. Apply the state transition function to <span class="arithmatex">\((X_2)_n\)</span> <span class="arithmatex">\(d_1\)</span> times to obtain a state <span class="arithmatex">\((X_2)_{n+d_1}\)</span> that must be a distance <span class="arithmatex">\(2q\)</span> from <span class="arithmatex">\((X_2)_m\)</span>. <span class="arithmatex">\(q\)</span> is then trivial to compute as a distance of 0 implies equality and a distance of 2 implies inequality.</p>
+<p>With <span class="arithmatex">\(d_2\)</span> known, <span class="arithmatex">\(d_3\)</span> and all subsequent partial distances can be computed via the same procedure. This process can be concluded when the state <span class="arithmatex">\((X_i)_{n+d_{i-1}} = X_m\)</span> as this implies <span class="arithmatex">\(d = d_{i-1}\)</span> and the desired distance is acquired. In the case of a 32-bit LCG, the distance between two states <span class="arithmatex">\(X_n\)</span> and <span class="arithmatex">\(X_m\)</span> can be computed as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 32-bit LCG</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">distance</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_n</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">d_i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// after each iteration, state_n becomes X_{n+d_{i-1}}</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">state_n</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_i_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">state_n</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">state_n</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_i_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">state_m</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">state_m</span><span class="p">;</span>
+<span class="w">        </span><span class="c1">// q == 1</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">state_i_n</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">state_i_m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">d_i</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">            </span><span class="n">jump</span><span class="p">(</span><span class="n">state_n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">d_i</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// simplified</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">distance</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_n</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">d_i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">state_n</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// because each jump won&#39;t modify the lower-order bits, we only need to check the next bit</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">state_n</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">mask</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">jump</span><span class="p">(</span><span class="n">state_n</span><span class="p">,</span><span class="w"> </span><span class="n">mask</span><span class="p">);</span>
+<span class="w">            </span><span class="n">d_i</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">mask</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">mask</span><span class="w"> </span><span class="o">&lt;&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">d_i</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// inlining jump logic</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">distance</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_n</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">d_i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">state_n</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">state_n</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="n">state_m</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">mask</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// we only ever jump a power of 2, which we have precomputed mult/inc for</span>
+<span class="w">            </span><span class="n">state_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MULTIPLIERS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">state_n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">INCREMENTS</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">            </span><span class="n">d_i</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">mask</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">mask</span><span class="w"> </span><span class="o">&lt;&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">d_i</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="state-recovery">State Recovery</h2>
+<p>LCG internal state recovery techniques include:</p>
+<ul>
+<li><a href="../../Specific-Techniques/lcg-partial/">State Recovery From Two Consecutive Partial Outputs</a></li>
+<li><a href="">Lattice-based State Recovery</a> (page pending, see: <a href="https://www.youtube.com/watch?v=gsaV9gcLntM">relevant video</a>)</li>
+</ul>
+<h2 id="variants">Variants</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Multiplier</th>
+<th>Increment</th>
+<th>Size</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PokeRNG</td>
+<td>0x41C64E6D</td>
+<td>0x6073</td>
+<td>32-bit</td>
+<td>RSE/FRLG/DPPt/HGSS main RNG</td>
+</tr>
+<tr>
+<td>PokeRNGR</td>
+<td>0xEEB9EB65</td>
+<td>0xA3561A1</td>
+<td>32-bit</td>
+<td>^ stepped backwards</td>
+</tr>
+<tr>
+<td>ARNG</td>
+<td>0x6C078965</td>
+<td>0x1</td>
+<td>32-bit</td>
+<td>DPPt/HGSS group seed &amp; pid rerolling</td>
+</tr>
+<tr>
+<td>ARNGR</td>
+<td>0x9638806D</td>
+<td>0x69C77F93</td>
+<td>32-bit</td>
+<td>^ stepped backwards</td>
+</tr>
+<tr>
+<td>XDRNG</td>
+<td>0x343FD</td>
+<td>0x269EC3</td>
+<td>32-bit</td>
+<td>Colosseum/XD/Channel/Ageto main RNG</td>
+</tr>
+<tr>
+<td>XDRNGR</td>
+<td>0xB9B33155</td>
+<td>0xA170F641</td>
+<td>32-bit</td>
+<td>^ stepped backwards</td>
+</tr>
+<tr>
+<td>MRNG</td>
+<td>0x41C64E6D</td>
+<td>0x3039</td>
+<td>32-bit</td>
+<td>DPPt lotto, Rumble main RNG</td>
+</tr>
+<tr>
+<td>MRNGR</td>
+<td>0xEEB9EB65</td>
+<td>0xFC77A683</td>
+<td>32-bit</td>
+<td>^ stepped backwards</td>
+</tr>
+<tr>
+<td>BWRNG</td>
+<td>0x5d588b656c078965</td>
+<td>0x269ec3</td>
+<td>64-bit</td>
+<td>BW/B2W2 main RNG</td>
+</tr>
+<tr>
+<td>BWRNGR</td>
+<td>0xdedcedae9638806d</td>
+<td>0x9b1ae6e9a384e6f9</td>
+<td>64-bit</td>
+<td>^ stepped backwards</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Linear_congruential_generator">Wikipedia</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

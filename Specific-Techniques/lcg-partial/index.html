@@ -1,0 +1,725 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://lincoln-lmc.github.io/pokemon-rng-docs/Specific-Techniques/lcg-partial/">
+      
+      
+        <link rel="prev" href="../../PRNGs/lcg/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>LCG State Recovery From Two Consecutive Partial Outputs - Pok&eacute;mon RNG Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lcg-state-recovery-from-two-consecutive-partial-outputs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pok&amp;eacute;mon RNG Docs" class="md-header__button md-logo" aria-label="Pok&eacute;mon RNG Docs" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pok&eacute;mon RNG Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LCG State Recovery From Two Consecutive Partial Outputs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pok&amp;eacute;mon RNG Docs" class="md-nav__button md-logo" aria-label="Pok&eacute;mon RNG Docs" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    Pok&eacute;mon RNG Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PRNGs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    PRNGs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PRNGs/lcg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linear Congruential Generator (LCG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specific Techniques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specific Techniques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LCG State Recovery From Two Consecutive Partial Outputs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LCG State Recovery From Two Consecutive Partial Outputs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#attributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attributions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#attributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attributions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lcg-state-recovery-from-two-consecutive-partial-outputs">LCG State Recovery From Two Consecutive Partial Outputs</h1>
+<p>Given two consecutive <a href="../../PRNGs/lcg/#variants">PokeRNG</a> outputs <span class="arithmatex">\(O_n\)</span> and <span class="arithmatex">\(O_{n+1}\)</span>, the goal is to find all internal states <span class="arithmatex">\(X_{n-1}\)</span> that produce them. This is particularly useful when trying to find all RNG states that produce a specific PID or set of IVs generated via Method 1/2/4 in Generations 3 and 4, but can be applied whenever consecutive RNG outputs are known.</p>
+<p>Trivially, <span class="arithmatex">\(X_n\)</span> must be of the form <span class="arithmatex">\(O_n \cdot 2^{16} + L_n\)</span> and <span class="arithmatex">\(X_{n+1}\)</span> of the form <span class="arithmatex">\(O_{n+1} \cdot 2^{16} + L_{n+1}\)</span> where <span class="arithmatex">\(O_n, O_{n+1}, L_n, L_{n+1} &lt; 2^{16}\)</span>.</p>
+<p><span class="arithmatex">\(L_{n+1}\)</span> can be directly computed from <span class="arithmatex">\(L_{n}\)</span> due to the property that <a href="../../PRNGs/lcg/#distance-function">the lower order bits of an LCG constitute their own smaller LCG</a>.</p>
+<p>Restated, given <span class="arithmatex">\(O_n\)</span>, <span class="arithmatex">\(O_{n+1}\)</span>, find all <span class="arithmatex">\(L_n\)</span> such that:</p>
+<div class="arithmatex">\[
+O_{n+1} \cdot 2^{16} + L_{n+1} \equiv a(O_n \cdot 2^{16} + L_n) + c \pmod m
+\]</div>
+<p>for some <span class="arithmatex">\(L_{n+1}\)</span>.</p>
+<p>For simplicity, call the ordered sequence of solutions <span class="arithmatex">\(S_i\)</span>, where each <span class="arithmatex">\(S_i\)</span> is a valid value for <span class="arithmatex">\(L_n\)</span> that satisfies the congruence, define <span class="arithmatex">\(L := L_{n+1}\)</span>, <span class="arithmatex">\(O_{0} := O_{n}\)</span>, and <span class="arithmatex">\(O_{1} := O_{n+1}\)</span>.</p>
+<p>Manipulate the congruence to obtain:</p>
+<div class="arithmatex">\[
+\begin{align}
+O_1 \cdot 2^{16} + L &amp;\equiv a(O_0 \cdot 2^{16} + S_i) + c \pmod m \\
+O_1 \cdot 2^{16} + L &amp;\equiv aO_0 \cdot 2^{16} + aS_i + c \pmod m \\
+(O_1 - aO_0) \cdot 2^{16} + L &amp;\equiv aS_i + c \pmod m \\
+\end{align}
+\]</div>
+<p>Take any two solutions <span class="arithmatex">\(S_0\)</span> and <span class="arithmatex">\(S_1\)</span> such that <span class="arithmatex">\(S_0 &lt; S_1\)</span> that satisfy the recurrence for <span class="arithmatex">\(L\)</span> and <span class="arithmatex">\(L'\)</span> respectively:</p>
+<div class="arithmatex">\[
+\begin{align}
+(O_1 - aO_0) \cdot 2^{16} + L &amp;\equiv aS_0 + c \pmod m \\
+(O_1 - aO_0) \cdot 2^{16} + L' &amp;\equiv aS_1 + c \pmod m \\
+\implies (L' - L) &amp;\equiv a(S_1 - S_0) \pmod m
+\end{align}
+\]</div>
+<p>Given that <span class="arithmatex">\(L, L' &lt; 2^{16}\)</span>, their difference lies in <span class="arithmatex">\((-2^{16}, 2^{16})\)</span> and the difference between any two solutions is constrained as follows:</p>
+<div class="arithmatex">\[
+\begin{align}
+a(S_1 - S_0) \bmod m &amp;&lt; 2^{16} \quad \text{or} \\
+a(S_1 - S_0) \bmod m &amp;&gt; -2^{16} \bmod m
+\end{align}
+\]</div>
+<p>All valid differences can be found as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="n">m</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mh">0x41C64E6D</span>
+<span class="k">for</span> <span class="n">difference</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">difference</span><span class="p">)</span> <span class="o">%</span> <span class="n">m</span>
+    <span class="k">if</span> <span class="n">result</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span> <span class="ow">or</span> <span class="n">result</span> <span class="o">&gt;</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">difference</span><span class="p">))</span>
+</code></pre></div>
+<p>which produces <code>0x67D3</code> and <code>0xCFA6</code> (<code>0x67D3 * 2</code>).</p>
+<p>This result implies that, given the smallest potential solution <span class="arithmatex">\(S_0\)</span>, <span class="arithmatex">\(S_1 = S_0 + \text{0x67D3}\)</span>, <span class="arithmatex">\(S_2 = S_0 + 2\cdot\text{0x67D3}\)</span>. Importantly, these are not all guaranteed to be actual solutions, so they must be manually tested.</p>
+<p>To find a potential solution to work from, start with this form of the congruence:</p>
+<div class="arithmatex">\[
+(O_1 - aO_0) \cdot 2^{16} + L \equiv aS_i + c \pmod{2^{32}}
+\]</div>
+<p>Written as an equation:</p>
+<div class="arithmatex">\[
+\begin{align}
+(O_1 - aO_0) \cdot 2^{16} + L + 2^{32}k &amp;= aS_i + c \\
+(O_1 - aO_0 + 2^{16}k) \cdot 2^{16} + L &amp;= aS_i + c
+\end{align}
+\]</div>
+<p>Multiplying both sides by <span class="arithmatex">\(q = \text{0x67D3}\)</span> allows the earlier property (<code>0x67D3*0x41C64E6D = 0x1AAD00007ED7</code>) to be applied for the substitution <span class="arithmatex">\(qa = 2^{32}p + r\)</span></p>
+<div class="arithmatex">\[
+\begin{align}
+q(O_1 - aO_0 + 2^{16}k) \cdot 2^{16} + qL &amp;= qaS_i + qc \\
+q(O_1 - aO_0 + 2^{16}k) \cdot 2^{16} + qL &amp;= (p\cdot2^{32} + r)S_i + qc \\
+q(O_1 - aO_0 + 2^{16}k) + \frac{qL}{2^{16}} &amp;= p\cdot2^{16}\cdot S_i + \frac{rS_i+qc}{2^{16}} \\
+q(O_1 - aO_0 + 2^{16}k) + \frac{qL - rS_i - qc}{2^{16}} &amp;= p\cdot2^{16}\cdot S_i
+\end{align}
+\]</div>
+<p>Calling the fractional term <span class="arithmatex">\(F\)</span> and isolating <span class="arithmatex">\(S_i\)</span>:</p>
+<div class="arithmatex">\[
+\begin{align}
+qk + \lfloor\frac{q(O_1 - aO_0) + F}{2^{16}}\rfloor = p\cdot S_i \\
+S_i \equiv \lfloor\frac{q(O_1 - aO_0) + F}{2^{16}}\rfloor \cdot p^{-1} \pmod q
+\end{align}
+\]</div>
+<p>Since this congruence is already <span class="arithmatex">\(\pmod q\)</span>, the smallest potential solution <span class="arithmatex">\(S_0\)</span> is just the principal solution given by:</p>
+<div class="arithmatex">\[
+S_0 = \lfloor\frac{q(O_1 - aO_0) + F}{2^{16}}\rfloor \cdot p^{-1} \bmod q
+\]</div>
+<p><span class="arithmatex">\(F\)</span> will vary depending on the value of <span class="arithmatex">\(S_i\)</span> and <span class="arithmatex">\(L\)</span> (though since these directly determine each other it can be thought of as only depending on one), but any value of <span class="arithmatex">\(F\)</span> less than <span class="arithmatex">\(2^{16}\)</span> above the true value will produce the correct <span class="arithmatex">\(S_i\)</span> due to the floored division.</p>
+<p>The range of values for <span class="arithmatex">\(F\)</span> can be tested as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="n">q</span> <span class="o">=</span> <span class="mh">0x67D3</span>
+<span class="n">r</span> <span class="o">=</span> <span class="mh">0x7ED7</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mh">0x41C64E6D</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mh">0x6073</span>
+
+<span class="n">min_F</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+<span class="n">max_F</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">S_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mh">0x10000</span><span class="p">):</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">S_i</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+    <span class="n">F_numerator</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">L</span> <span class="o">-</span> <span class="n">r</span> <span class="o">*</span> <span class="n">S_i</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">c</span>
+
+    <span class="k">assert</span> <span class="p">(</span><span class="n">F_numerator</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">F_numerator</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span>
+    <span class="k">if</span> <span class="n">F</span> <span class="o">&lt;</span> <span class="n">min_F</span><span class="p">:</span>
+        <span class="n">min_F</span> <span class="o">=</span> <span class="n">F</span>
+    <span class="k">if</span> <span class="n">F</span> <span class="o">&gt;</span> <span class="n">max_F</span><span class="p">:</span>
+        <span class="n">max_F</span> <span class="o">=</span> <span class="n">F</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">min_F</span><span class="p">),</span> <span class="nb">hex</span><span class="p">(</span><span class="n">max_F</span><span class="p">))</span>
+</code></pre></div>
+<p>which reveals <span class="arithmatex">\(F \in [\text{-0xA584}, \text{0x4034}]\)</span>. Using a value of <code>0x4034</code> for <span class="arithmatex">\(F\)</span> will be between <code>0x4034 - 0x4034 = 0x0</code> and <code>0x4034 - (-0xA584) = 0xE5B8</code> above the true value which is always in the margin of error that allows for the computation of <span class="arithmatex">\(S_0\)</span>. <code>0x4034</code> is the minimum such value, and anything up to and including <code>0x5A7B</code>(<code>0xFFFF - 0xA584</code>) will work.</p>
+<p>Computing <span class="arithmatex">\(S_0\)</span> is easily implemented as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="n">q</span> <span class="o">=</span> <span class="mh">0x67D3</span>
+<span class="n">r</span> <span class="o">=</span> <span class="mh">0x7ED7</span>
+<span class="n">p</span> <span class="o">=</span> <span class="mh">0x1AAD</span>
+<span class="n">p_inv</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="c1"># 0xD3E</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mh">0x41C64E6D</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mh">0x6073</span>
+<span class="n">F</span> <span class="o">=</span> <span class="mh">0x4034</span> <span class="c1"># [0x4034, 0x5A7B]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">principal_candidate_solution</span><span class="p">(</span><span class="n">output_0</span><span class="p">,</span> <span class="n">output_1</span><span class="p">):</span>
+    <span class="c1"># floored division implemented as right shift</span>
+    <span class="k">return</span> <span class="p">(((</span><span class="n">q</span> <span class="o">*</span> <span class="p">(</span><span class="n">output_1</span> <span class="o">-</span> <span class="n">a</span> <span class="o">*</span> <span class="n">output_0</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_inv</span><span class="p">)</span> <span class="o">%</span> <span class="n">q</span>
+</code></pre></div>
+<p>and the full computation of all valid states that produce two consecutive outputs is implemented as:</p>
+<div class="highlight"><pre><span></span><code><span class="n">m</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
+<span class="n">a_inv</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="c1"># 0xEEB9EB65</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_solution</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">output_1</span><span class="p">):</span>
+    <span class="c1"># output_0 need not be tested as it should just be the upper half of ``state``</span>
+    <span class="k">return</span> <span class="p">(((</span><span class="n">state</span> <span class="o">*</span> <span class="n">a</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span><span class="p">)</span> <span class="o">==</span> <span class="n">output_1</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">output_0</span><span class="p">,</span> <span class="n">output_1</span><span class="p">):</span>
+    <span class="c1"># at most 3</span>
+    <span class="n">solutions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">S_0</span> <span class="o">=</span> <span class="n">principal_candidate_solution</span><span class="p">(</span><span class="n">output_0</span><span class="p">,</span> <span class="n">output_1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">S_0</span> <span class="o">+</span> <span class="n">q</span> <span class="o">*</span> <span class="n">i</span>
+        <span class="n">X_n</span> <span class="o">=</span> <span class="n">S</span> <span class="o">|</span> <span class="p">(</span><span class="n">output_0</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">test_solution</span><span class="p">(</span><span class="n">X_n</span><span class="p">,</span> <span class="n">output_1</span><span class="p">):</span>
+            <span class="c1"># step backwards to get the state X_{n-1} that produces the outputs sequentially</span>
+            <span class="n">solutions</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">X_n</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span> <span class="o">*</span> <span class="n">a_inv</span><span class="p">)</span> <span class="o">%</span> <span class="n">m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">solutions</span>
+</code></pre></div>
+<h2 id="attributions">Attributions</h2>
+<ul>
+<li>This technique can be attributed to user Parzival/StarfBerry who first shared it in a (<a href="https://github.com/StarfBerry/poke-scripts/blob/master/RNG/LCG_Reversal.py">now deleted</a>) GitHub repository</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
