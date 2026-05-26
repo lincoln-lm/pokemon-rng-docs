@@ -14,15 +14,15 @@ $$
 
 for some $L_{n+1}$.
 
-For simplicity, call the ordered sequence of solutions $S_i$, where each $S_i$ is a valid value for $L_n$ that satisfies the congruence.
+For simplicity, call the ordered sequence of solutions $S_i$, where each $S_i$ is a valid value for $L_n$ that satisfies the congruence, define $L := L_{n+1}$, $O_{0} := O_{n}$, and $O_{1} := O_{n+1}$.
 
 Manipulate the congruence to obtain:
 
 $$
 \begin{align}
-O_{n+1} \cdot 2^{16} + L_{n+1} &\equiv a(O_n \cdot 2^{16} + S_i) + c \pmod m \\
-O_{n+1} \cdot 2^{16} + L_{n+1} &\equiv aO_n \cdot 2^{16} + aS_i + c \pmod m \\
-(O_{n+1} - aO_n) \cdot 2^{16} + L_{n+1} &\equiv aS_i + c \pmod m \\
+O_1 \cdot 2^{16} + L &\equiv a(O_0 \cdot 2^{16} + S_i) + c \pmod m \\
+O_1 \cdot 2^{16} + L &\equiv aO_0 \cdot 2^{16} + aS_i + c \pmod m \\
+(O_1 - aO_0) \cdot 2^{16} + L &\equiv aS_i + c \pmod m \\
 \end{align}
 $$
 
@@ -30,8 +30,8 @@ Take any two solutions $S_0$ and $S_1$ such that $S_0 < S_1$ that satisfy the re
 
 $$
 \begin{align}
-(O_{n+1} - aO_n) \cdot 2^{16} + L &\equiv aS_0 + c \pmod m \\
-(O_{n+1} - aO_n) \cdot 2^{16} + L' &\equiv aS_1 + c \pmod m \\
+(O_1 - aO_0) \cdot 2^{16} + L &\equiv aS_0 + c \pmod m \\
+(O_1 - aO_0) \cdot 2^{16} + L' &\equiv aS_1 + c \pmod m \\
 \implies (L' - L) &\equiv a(S_1 - S_0) \pmod m
 \end{align}
 $$
@@ -63,15 +63,15 @@ This result implies that, given the smallest potential solution $S_0$, $S_1 = S_
 To find a potential solution to work from, start with this form of the congruence:
 
 $$
-(O_{n+1} - aO_n) \cdot 2^{16} + L_{n+1} \equiv aS_i + c \pmod{2^{32}}
+(O_1 - aO_0) \cdot 2^{16} + L \equiv aS_i + c \pmod{2^{32}}
 $$
 
 Written as an equation:
 
 $$
 \begin{align}
-(O_{n+1} - aO_n) \cdot 2^{16} + L_{n+1} + 2^{32}k &= aS_i + c \\
-(O_{n+1} - aO_n + 2^{16}k) \cdot 2^{16} + L_{n+1} &= aS_i + c
+(O_1 - aO_0) \cdot 2^{16} + L + 2^{32}k &= aS_i + c \\
+(O_1 - aO_0 + 2^{16}k) \cdot 2^{16} + L &= aS_i + c
 \end{align}
 $$
 
@@ -79,10 +79,10 @@ Multiplying both sides by $q = \text{0x67D3}$ allows the earlier property (``0x6
 
 $$
 \begin{align}
-q(O_{n+1} - aO_{n} + 2^{16}k) \cdot 2^{16} + qL_{n+1} &= qaS_i + qc \\
-q(O_{n+1} - aO_{n} + 2^{16}k) \cdot 2^{16} + qL_{n+1} &= (p\cdot2^{32} + r)S_i + qc \\
-q(O_{n+1} - aO_{n} + 2^{16}k) + \frac{qL_{n+1}}{2^{16}} &= p\cdot2^{16}\cdot S_i + \frac{rS_i+qc}{2^{16}} \\
-q(O_{n+1} - aO_{n} + 2^{16}k) + \frac{qL_{n+1} - rS_i - qc}{2^{16}} &= p\cdot2^{16}\cdot S_i
+q(O_1 - aO_0 + 2^{16}k) \cdot 2^{16} + qL &= qaS_i + qc \\
+q(O_1 - aO_0 + 2^{16}k) \cdot 2^{16} + qL &= (p\cdot2^{32} + r)S_i + qc \\
+q(O_1 - aO_0 + 2^{16}k) + \frac{qL}{2^{16}} &= p\cdot2^{16}\cdot S_i + \frac{rS_i+qc}{2^{16}} \\
+q(O_1 - aO_0 + 2^{16}k) + \frac{qL - rS_i - qc}{2^{16}} &= p\cdot2^{16}\cdot S_i
 \end{align}
 $$
 
@@ -90,18 +90,18 @@ Calling the fractional term $F$ and isolating $S_i$:
 
 $$
 \begin{align}
-qk + \lfloor\frac{q(O_{n+1} - aO_{n}) + F}{2^{16}}\rfloor = p\cdot S_i \\
-S_i \equiv \lfloor\frac{q(O_{n+1} - aO_{n}) + F}{2^{16}}\rfloor \cdot p^{-1} \pmod q
+qk + \lfloor\frac{q(O_1 - aO_0) + F}{2^{16}}\rfloor = p\cdot S_i \\
+S_i \equiv \lfloor\frac{q(O_1 - aO_0) + F}{2^{16}}\rfloor \cdot p^{-1} \pmod q
 \end{align}
 $$
 
 Since this congruence is already $\pmod q$, the smallest potential solution $S_0$ is just the principal solution given by:
 
 $$
-S_0 = \lfloor\frac{q(O_{n+1} - aO_{n}) + F}{2^{16}}\rfloor \cdot p^{-1} \bmod q
+S_0 = \lfloor\frac{q(O_1 - aO_0) + F}{2^{16}}\rfloor \cdot p^{-1} \bmod q
 $$
 
-$F$ will vary depending on the value of $S_i$ and $L_{n+1}$ (though since these directly determine each other it can be thought of as only depending on one), but any value of $F$ less than $2^{16}$ above the true value will produce the correct $S_i$ due to the floored division.
+$F$ will vary depending on the value of $S_i$ and $L$ (though since these directly determine each other it can be thought of as only depending on one), but any value of $F$ less than $2^{16}$ above the true value will produce the correct $S_i$ due to the floored division.
 
 The range of values for $F$ can be tested as follows:
 
