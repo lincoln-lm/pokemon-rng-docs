@@ -311,6 +311,13 @@ uint32_t distance(uint32_t state_n, uint32_t state_m) {
 }
 ```
 
+## State Recovery
+
+LCG internal state recovery techniques include:
+
+- [State Recovery From Two Consecutive Partial Outputs](../Specific-Techniques/lcg-partial.md)
+- [Lattice-based State Recovery]() (page pending, see: [relevant video](https://www.youtube.com/watch?v=gsaV9gcLntM))
+
 ## Variants
 
 | Name | Multiplier | Increment | Size | Usage |
@@ -328,4 +335,4 @@ uint32_t distance(uint32_t state_n, uint32_t state_m) {
 
 ## References
 
-* [Wikipedia](https://en.wikipedia.org/wiki/Linear_congruential_generator)
+- [Wikipedia](https://en.wikipedia.org/wiki/Linear_congruential_generator)
